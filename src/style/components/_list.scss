@@ -1,0 +1,113 @@
+.causes-list-container{
+  width: $causeListWidth;
+  // min-height: 100vh;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.cause-display{
+  width: 360px;
+  border: 1px solid lightgrey;
+  margin: 5px;
+  padding: 10px;
+  border-radius: 5px;
+  background: white;
+  // opacity: 1;
+  -webkit-transition: .2s ease-in-out;
+  transition: .2s ease-in-out;
+  transform: perspective(1px) translateZ(0);
+  /*box-shadow: 0 0 1px rgba(0, 0, 0, 0);*/
+  transition-property: box-shadow, transform;
+  box-shadow: 10px 10px 10px -10px rgba(0, 0, 0, 0.5);
+}
+.cause-display:hover{
+  box-shadow: $standardShadow;
+  -webkit-transform: scale(1.02);
+  transform: scale(1.02);
+}
+.cause-logo-container{
+  max-height: 180px;
+  height: 180px;
+  max-width: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+.cause-logo{
+  display: block;
+  max-width: 100%;
+  max-height: 180px;
+  width: auto;
+  height: auto;
+}
+.cause-text{
+  font-family: "Roboto",sans-serif;
+  line-height: 20px;
+  font-size: 16px;
+  letter-spacing: 0px;
+}
+.cause-address{
+  color: $irrigateBackground;
+  font-weight: 700;
+  overflow-wrap: break-word;
+  font-size: 18px;
+}
+.cause-number{
+  color: $irrigateBackground;
+  font-weight: 700;
+  font-size: 17px;
+  margin: 0 0 10px 0;
+}
+.add-cause-to-your-list-button{
+  margin: 10px auto 15px 0;
+  padding: 0 0 0 0;
+  width: 100%;
+  height: 30px;
+  font-weight: 600;
+  background-color: darkgreen;
+  color: beige;
+  border: 1px solid darkgreen;
+  border-radius: 15px;
+  letter-spacing: 1px;
+  outline: none;
+  transition: all 0.5s;
+  font-size: 0.8rem;
+  box-shadow: $standardShadow;
+}
+.add-cause-to-your-list-button:hover{
+  cursor: pointer;
+  background-color: $irrigateFontColor;
+  color: $irrigateBackground;
+  border: 1px solid $irrigateBackground;
+}
+
+.manage-container {
+  display: flex;
+  flex-direction: column;
+  justify-self: start;
+}
+.manageAssociation-button {
+  padding: 0 50px;
+  margin: auto;
+  /* width: 100%; */
+  height: 30px;
+  font-weight: 600;
+  background-color: orangered;
+  color: beige;
+  border: 1px solid orangered;
+  border-radius: 15px;
+  letter-spacing: 1px;
+  outline: none;
+  transition: all 0.5s;
+  font-size: 0.8rem;
+  box-shadow: 3px 3px 10px 0px grey;
+}
+.manageAssociation-button:hover{
+  cursor: pointer;
+  background-color: $irrigateFontColor;
+  color: orangered;
+  border: 1px solid orangered;
+}

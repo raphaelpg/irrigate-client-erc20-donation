@@ -5,6 +5,7 @@
   "version": "0.1.0",
   "author": "Rapheal Pinto Gregorio <raphael_pinto@outlook.com>",
   "dependencies": {
+    "@drizzle/store": "^1.5.3",
     "gatsby": "^2.32.0",
     "gatsby-image": "^2.5.0",
     "gatsby-plugin-manifest": "^2.6.1",

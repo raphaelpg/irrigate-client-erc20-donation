@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, navigate } from "gatsby";
 import Brand from "../Brand/brand";
 import UserServices from '../../services/user.service';
+import ConnectWallet from '../WalletButton/connectWallet';
 
 interface IHeaderProps {
   siteTitle: string
@@ -34,17 +35,18 @@ const Header: React.FC<IHeaderProps> = ({ siteTitle = '' }) => {
         <Link className="header-link" to="/about">About</Link>
         <Link className="header-link" to="/contact">Contact Us</Link>
         { currentUser ? (
-          <div className="header-logger-container">
-            <Link className="header-link" to="/account">Account</Link>
-            <button className="header-button" onClick={logout}>Log out</button>
-          </div>
-        ) : (
-          <div className="header-logger-container">
-            <Link className="header-link" to="/register">Sign up</Link>
-            <Link className="header-link" to="/login">Log in</Link>
-          </div>
-        )  
-      }
+            <div className="header-logger-container">
+              <Link className="header-link" to="/account">Account</Link>
+              <button className="header-button" onClick={logout}>Log out</button>
+            </div>
+          ) : (
+            <div className="header-logger-container">
+              <Link className="header-link" to="/register">Sign up</Link>
+              <Link className="header-link" to="/login">Log in</Link>
+            </div>
+          )  
+        }
+        <ConnectWallet/>
       </div>
     </div>
   </header>

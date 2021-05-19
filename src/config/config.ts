@@ -1,32 +1,37 @@
-const SERVER = {
-  environment: "prod",
-  serverUrl: `https://www.future-space.org`,
-  getAssociations: '/api/associations',
-  addAssociation: '/api/association/add',
-  deleteAssociation: '/api/association/delete',
-  updateAssociation: '/api/association/update',
-  getUser: '/api/user',
-  signUp: '/api/user/add',
-	 logIn: '/api/user/login',
-  updateUser: '/api/user/updateSubscriptions',
-  deleteUser: '/api/user/delete',
-  sendMessage: '/api/message/add'
-};
-
 // const SERVER = {
-//   environment: "test",
-//   serverUrl: `http://localhost:8080`,
+//   environment: "prod",
+//   serverUrl: `https://www.future-space.org`,
 //   getAssociations: '/api/associations',
 //   addAssociation: '/api/association/add',
 //   deleteAssociation: '/api/association/delete',
 //   updateAssociation: '/api/association/update',
 //   getUser: '/api/user',
 //   signUp: '/api/user/add',
-// 	logIn: '/api/user/login',
+// 	 logIn: '/api/user/login',
+//   updateUser: '/api/user/updateSubscriptions',
 //   deleteUser: '/api/user/delete',
-// 	updateUser: '/api/user/updateSubscriptions',
 //   sendMessage: '/api/message/add'
 // };
+
+const SERVER = {
+  environment: "test",
+  serverUrl: `http://localhost:8080`,
+  getAssociations: '/api/associations',
+  addAssociation: '/api/association/add',
+  deleteAssociation: '/api/association/delete',
+  updateAssociation: '/api/association/update',
+  getUser: '/api/user',
+  signUp: '/api/user/add',
+	logIn: '/api/user/login',
+  deleteUser: '/api/user/delete',
+	updateUser: '/api/user/updateSubscriptions',
+  sendMessage: '/api/message/add'
+};
+
+const WEB3 = {
+	erc20: "",
+	irrigate: "",
+};
 
 const CATEGORIES = [
 	'All', 
@@ -62,6 +67,7 @@ const FILTERS = [
 const config = {
   server: SERVER,
 	filters: FILTERS,
+	web3: WEB3
 };
 
 export default config;

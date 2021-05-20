@@ -25,6 +25,7 @@ const AddAssociationForm: React.FC<IAddAssociationForm> = (props) => {
     "logo": "",
     "contactName": "",
     "contactEmail": "",
+    "totalDaiRaised": 0
   };
 
   const [newAssociation, setNewAssociation] = useState<IAssociation>(initialAssociation);

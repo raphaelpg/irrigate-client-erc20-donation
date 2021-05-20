@@ -12,4 +12,5 @@ export interface IAssociation {
 	logo?: string,
 	contactName: string,
 	contactEmail: string,
+	totalDaiRaised: number
 };

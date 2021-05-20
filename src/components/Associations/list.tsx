@@ -5,6 +5,7 @@ import FadeIn from '../../effects/FadeIn';
 import { IAssociation } from '../../interfaces/Association';
 import { IUser } from '../../interfaces/User';
 import UserServices from '../../services/user.service';
+import config from '../../config/config';
 
 interface IListProps {
 	selectedCategory: string,
@@ -55,7 +56,8 @@ const List: React.FC<IListProps> = (props) => {
 						};
 					})
 					.map((association, index) => {
-						const {_id, name, description, link, category, continent, country, logo, address } = association;
+						const { _id, name, description, link, category, continent, country, logo, totalDaiRaised } = association;
+						console.log(association)
 						return(
 							<FadeIn className="cause-display" duration={1000} triggerOnce={true} key={index}>
 									<div className="cause-logo-container">
@@ -66,10 +68,10 @@ const List: React.FC<IListProps> = (props) => {
 									<p className="cause-text">Activity's location: {continent}, {country}</p>
 									<p className="cause-text">{description}</p>
 									<a className="cause-text" href={link} target="_blank" rel="noopener noreferrer">{link}</a>
-									<p className="cause-number">Monthly donors: 2000 persons</p>
-									<p className="cause-number">Monthly donations: 1500 DAI</p>
-									<p className="cause-number">Total funds raised: 23500 DAI</p>
-									<p className="cause-number">Eth address: {address}</p>
+									{/* <p className="cause-number">Monthly donors: 2000 persons</p> */}
+									{/* <p className="cause-number">Monthly donations: 1500 DAI</p> */}
+									<p className="cause-number">Total funds raised: {totalDaiRaised} {(config.web3.erc20Name).toUpperCase()}</p>
+									{/* <p className="cause-number">Eth address: {address}</p> */}
 									{ user?.subscribedAssociations?.includes(_id!) ? (
 										<div className="manage-container">
 											<Link className="manageAssociation-button" to="/account">Manage</Link>
@@ -77,6 +79,7 @@ const List: React.FC<IListProps> = (props) => {
 									) : (
 										<button className="add-cause-to-your-list-button" name={_id} onClick={() => addAssociation(_id!)} >Add association to your donation stream</button>
 									) }
+									<button className="add-cause-to-your-list-button" name={_id} onClick={() => addAssociation(_id!)} >Make a donation in {(config.web3.erc20Name).toUpperCase()}</button>
 							</FadeIn>
 						);
 					}

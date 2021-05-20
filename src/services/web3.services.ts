@@ -54,6 +54,7 @@ export const handleChainChanged = () =>{
 export const handleAccountsChanged = (accounts: any, currentAddress: any, setter: any) => {
   if (accounts.length === 0) {
     console.log('Please connect to MetaMask.');
+    window.location.reload();
   } else if (accounts[0] !== currentAddress) {
     setter(accounts[0]);
   };

@@ -21,7 +21,6 @@ const ConnectWallet: React.FC = () => {
 
       window.ethereum.on('chainChanged', web3Services.handleChainChanged);
       window.ethereum.on('accountsChanged', (accounts: any) => web3Services.handleAccountsChanged(accounts, walletAddress, setWallet));
-      window.ethereum.on('disconnect', web3Services.handleChainChanged);
 
       try {
         const networkId = window.ethereum.networkVersion;

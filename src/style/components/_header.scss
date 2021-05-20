@@ -26,7 +26,7 @@ header{
 .header-logger-container{
   display: flex;
   justify-content: space-between;
-  width: 30%;
+  width: 8em;
 }
 
 .header-link{
@@ -46,4 +46,41 @@ header{
   align-items: center;
   justify-content: center;
   flex-direction: column;
+}
+
+.wallet-button{
+  position: relative;
+  margin: 0 auto;
+  padding: 0 0 0 0;
+  width: 150px;
+  height: 40px;
+  font-weight: inherit;
+  font-size: medium;
+  background-color: orange;
+  color: $irrigateBackground;
+  // border: 1px solid $irrigateBackground;
+  border: none;
+  border-radius: 5px;
+  letter-spacing: 1px;
+  outline: none;
+  // transition: all 0.5s;
+  // box-shadow: 2px 3px 10px 0px beige;
+}
+.wallet-button:hover{
+  background-color: $irrigateFontColor;
+  color: orange;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.demo-warning {
+  position: relative;
+  background-color: orange;
+  color: black;
+  font-weight: 600;
+  margin: 0;
+  width: 100%;
+  left: 0;
+  text-align: center;
 }

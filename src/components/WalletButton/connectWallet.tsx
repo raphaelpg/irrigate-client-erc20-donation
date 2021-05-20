@@ -58,7 +58,7 @@ const ConnectWallet: React.FC = () => {
       { isConnected ?  
         <div className="walletAddress">{walletAddress.substr(0, 6) + "..." + walletAddress.slice(-4)}</div>  
         :
-        <button onClick={connectToWeb3}>Connect Wallet</button>
+        <button className="wallet-button" onClick={connectToWeb3}>Connect Wallet</button>
       }
     </div>
   );

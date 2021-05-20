@@ -20,6 +20,7 @@ header{
   display: flex;
   width: 50%;
   justify-content: space-between;
+  align-items: center;
 }
 
 .header-logger-container{
@@ -38,4 +39,11 @@ header{
 }
 .header-button:hover{
   cursor: pointer;
+}
+
+.walletContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }

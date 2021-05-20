@@ -1,44 +1,66 @@
-import React from 'react';
-import Web3 from 'web3';
+import React, { useState, useEffect } from 'react';
+import { web3Services } from '../../services/web3.services';
 // import React, { useState, useContext } from 'react';
 // import config from '../../config/config';
 // import associationService from '../../services/associations.service';
 
 const ConnectWallet: React.FC = () => {
+  const [isConnected, setConnectedStatus] = useState(false);
+  const [walletAddress, setWallet] = useState("");
+  const [status, setStatus] = useState("");
 
   const connectToWeb3 = async () => {
-    console.log("connecting to web3")
-    console.log("1")
-    if (window.ethereum) {
-      console.log("2")
-      const web3 = new Web3(window.ethereum);
-      try {
-        await window.ethereum.enable();
-        console.log(web3.eth.accounts)
-        return web3;
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    else if (window.web3) {
-      console.log("3")
-      const web3 = window.web3;
-      console.log('Injected web3 detected.');
-      console.log(web3.eth.accounts)
-      return web3;
-    }
-    else {
-      console.log("4")
-      const provider = new Web3.providers.HttpProvider('http://127.0.0.1:7545');
-      const web3 = new Web3(provider);
-      console.log('No web3 instance injected, using Local web3.');
-      return web3;
-    }
+    const walletResponse = await web3Services.connectWallet();
+    setConnectedStatus(walletResponse.connectedStatus);
+    setStatus(walletResponse.status);
+    setWallet(walletResponse.address);
   }
 
+  const checkWalletConnection = async () => {
+    if (window.ethereum) {
+
+      window.ethereum.on('chainChanged', web3Services.handleChainChanged);
+      window.ethereum.on('accountsChanged', (accounts: any) => web3Services.handleAccountsChanged(accounts, walletAddress, setWallet));
+      window.ethereum.on('disconnect', web3Services.handleChainChanged);
+
+      try {
+        const networkId = window.ethereum.networkVersion;
+        if (networkId == 137) {
+          const accounts = await window.ethereum.request({ method: "eth_accounts" })
+          if (accounts.length) {
+            setConnectedStatus(true);
+            setWallet(accounts[0]);
+          } else {
+            setConnectedStatus(false);
+            setStatus("🦊 Connect to Metamask using the top right button.");
+          }
+        } else {
+          setConnectedStatus(false);
+          setStatus("🦊 Set network to Matic.");
+        }
+      } catch {
+        setConnectedStatus(false);
+        setStatus("🦊 Connect to Metamask using the top right button.");
+      }
+    }  
+  }
+
+  useEffect(() => {
+    checkWalletConnection();
+  });
+
   return(
-    <div className="walletButton">
-      <button onClick={connectToWeb3}>Connect Wallet</button> 
+    <div className="walletContainer">
+      { isConnected ? 
+        <div className="walletStatus">Connected</div>
+        :
+        ""  
+      }
+      { isConnected ?  
+        <div className="walletAddress">{walletAddress.substr(0, 6) + "..." + walletAddress.slice(-4)}</div>  
+        :
+        <button onClick={connectToWeb3}>Connect Wallet</button>
+      }
     </div>
   );
 };

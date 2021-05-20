@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { web3Services } from '../../services/web3.services';
+import config from '../../config/config';
 // import React, { useState, useContext } from 'react';
-// import config from '../../config/config';
 // import associationService from '../../services/associations.service';
 
 const ConnectWallet: React.FC = () => {
@@ -24,7 +24,7 @@ const ConnectWallet: React.FC = () => {
 
       try {
         const networkId = window.ethereum.networkVersion;
-        if (networkId == 137) {
+        if (networkId == config.web3.networkId) {
           const accounts = await window.ethereum.request({ method: "eth_accounts" })
           if (accounts.length) {
             setConnectedStatus(true);

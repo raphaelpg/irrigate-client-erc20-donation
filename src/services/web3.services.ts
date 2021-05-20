@@ -1,3 +1,5 @@
+import config from '../config/config';
+
 export const connectWallet = async () => {
   if (window.ethereum) {
     try {
@@ -9,9 +11,10 @@ export const connectWallet = async () => {
         networkId: 0,
         address: ""
       };
-      if (networkId != 137) {
+      if (networkId != config.web3.networkId) {
         obj.connectedStatus = false,
         obj.status = "🦊 Set network to Matic."
+        alert("Metamask must be set to Matic network")
       } else {
         obj.connectedStatus = true,
         obj.status = "Connected",

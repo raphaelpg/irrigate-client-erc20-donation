@@ -40,8 +40,10 @@ const List: React.FC<IListProps> = (props) => {
 				amount: config.web3.txAmount,
 				currency: config.web3.erc20Name
 			}
-			web3Services.sendErc20Donation(tx);
-			// componentContext?.retrieveAssociationsList();
+			web3Services.sendErc20Donation(tx, componentContext?.retrieveAssociationsList)
+			// .then(() => {
+			// 	componentContext?.retrieveAssociationsList();
+			// })
 		} else {
 			alert("Connect Metamask first")
 		}

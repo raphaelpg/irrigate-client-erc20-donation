@@ -74,7 +74,7 @@ const handleAccountsChanged = (accounts: any, currentAddress: any, setter: any) 
   };
 };
 
-const sendErc20Donation = async (tx: ITransaction) => {
+const sendErc20Donation = async (tx: ITransaction, callback: () => void) => {
   const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
   tx.donorAddress = accounts[0];
   await fetch(config.server.serverUrl + config.server.sendDonation, {
@@ -99,7 +99,7 @@ const sendErc20Donation = async (tx: ITransaction) => {
       .send({ from: accounts[0] })
       .on('receipt', () => {
         console.log("sent")
-        return true
+        callback();
       })
     }
   })

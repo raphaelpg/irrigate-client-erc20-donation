@@ -75,6 +75,7 @@ const handleAccountsChanged = (accounts: any, currentAddress: any, setter: any) 
 };
 
 const sendErc20Donation = async (tx: ITransaction, callback: () => void) => {
+  tx.amount = Web3.utils.toWei(tx.amount, 'ether'); 
   const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
   tx.donorAddress = accounts[0];
   await fetch(config.server.serverUrl + config.server.sendDonation, {
@@ -90,12 +91,11 @@ const sendErc20Donation = async (tx: ITransaction, callback: () => void) => {
   .then(async (res) => {
     console.log(res)
     if (res.status == 201) {
-      console.log("sending fund via web3")
+      console.log("sending funds via web3")
       const web3 = new Web3(window.ethereum);
-      const amount = config.web3.txAmount;
       const erc20Instance = new web3.eth.Contract(ecr20Contract.abi as AbiItem[], config.web3.erc20Address);
       
-      await erc20Instance.methods.transfer(config.web3.irrigateAddress, amount)
+      await erc20Instance.methods.transfer(config.web3.irrigateAddress, tx.amount)
       .send({ from: accounts[0] })
       .on('receipt', () => {
         console.log("erc20 sent")
@@ -109,10 +109,15 @@ const convertFromWei = (value: number) => {
   return parseFloat(Web3.utils.fromWei(value.toString(), 'ether')).toFixed(2);
 }
 
+const convertToWei = (value: string) => {
+  return Web3.utils.toWei(value, 'ether')
+}
+
 export const web3Services = {
   connectWallet,
   handleChainChanged,
   handleAccountsChanged,
   sendErc20Donation,
-  convertFromWei
+  convertFromWei,
+  convertToWei
 };

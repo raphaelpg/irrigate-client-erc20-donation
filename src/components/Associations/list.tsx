@@ -7,6 +7,7 @@ import { IUser } from '../../interfaces/User';
 import UserServices from '../../services/user.service';
 import config from '../../config/config';
 import { web3Services } from '../../services/web3.services';
+import DonationForm from '../Forms/donationForm';
 
 interface IListProps {
 	selectedCategory: string,
@@ -17,6 +18,17 @@ const List: React.FC<IListProps> = (props) => {
 	const componentContext: IAppContext | null = useContext(AppContext);
 	const associations: IAssociation[] | undefined = componentContext?.associations;
 	const [user, setUser] = useState<IUser>();
+	const [displayForm, setDisplayForm] = useState<boolean>(false);
+	const [donationParams, setDonationParams] = useState<{associationName: string, associationAddress: string}>({associationName: "", associationAddress: ""})
+
+	const handleDonationButton = (associationName: string, associationAddress: string) => {
+		setDonationParams({associationName: associationName, associationAddress: associationAddress});
+		handleDonation(true);
+	}
+
+	const handleDonation = (status: boolean) => {
+		setDisplayForm(status);
+	};
 
 	const addAssociation = (associationId: string) => {
 		if (user) {
@@ -31,20 +43,20 @@ const List: React.FC<IListProps> = (props) => {
 		}
 	}
 
-	const makeDonation = (name: string, address: string) => {
-		if (localStorage.getItem("web3") == "connected") {
-			console.log("sending tx to", name, address)
-			const tx = {
-				associationName: name,
-				associationAddress: address,
-				amount: config.web3.txAmount,
-				currency: config.web3.erc20Name
-			}
-			web3Services.sendErc20Donation(tx, componentContext?.retrieveAssociationsList)
-		} else {
-			alert("Connect Metamask first")
-		}
-	}
+	// const makeDonation = (name: string, address: string) => {
+	// 	if (localStorage.getItem("web3") == "connected") {
+	// 		console.log("sending tx to", name, address)
+	// 		const tx = {
+	// 			associationName: name,
+	// 			associationAddress: address,
+	// 			amount: config.web3.txAmount,
+	// 			currency: config.web3.erc20Name
+	// 		}
+	// 		web3Services.sendErc20Donation(tx, componentContext?.retrieveAssociationsList)
+	// 	} else {
+	// 		alert("Connect Metamask first")
+	// 	}
+	// }
 	
 	useEffect(() => {
 		componentContext?.retrieveAssociationsList();
@@ -95,11 +107,19 @@ const List: React.FC<IListProps> = (props) => {
 									) : (
 										<button className="add-cause-to-your-list-button" name={_id} onClick={() => addAssociation(_id!)} >Add association to your donation stream</button>
 									) }
-									<button className="add-cause-to-your-list-button" name={_id} onClick={() => makeDonation(name!, address!)} >Make a donation in {(config.web3.erc20Name).toUpperCase()}</button>
+									{/* <button className="add-cause-to-your-list-button" name={_id} onClick={() => makeDonation(name!, address!)} >Make a donation in {(config.web3.erc20Name).toUpperCase()}</button> */}
+									<button className="add-cause-to-your-list-button" name={_id} 
+										onClick={() => handleDonationButton(name!, address!)} 
+									>Make a donation in {(config.web3.erc20Name).toUpperCase()}</button>
 							</FadeIn>
 						);
 					}
 				)}
+				<DonationForm 
+					handleDonation={handleDonation}
+					displayForm={displayForm}
+					donationParams={donationParams!}
+				/>
 			</div>
 		);
 	} else {

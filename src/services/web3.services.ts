@@ -98,7 +98,7 @@ const sendErc20Donation = async (tx: ITransaction, callback: () => void) => {
       await erc20Instance.methods.transfer(config.web3.irrigateAddress, amount)
       .send({ from: accounts[0] })
       .on('receipt', () => {
-        console.log("sent")
+        console.log("erc20 sent")
         callback();
       })
     }

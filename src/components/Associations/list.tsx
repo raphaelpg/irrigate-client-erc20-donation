@@ -6,6 +6,7 @@ import { IAssociation } from '../../interfaces/Association';
 import { IUser } from '../../interfaces/User';
 import UserServices from '../../services/user.service';
 import config from '../../config/config';
+import { web3Services } from '../../services/web3.services';
 
 interface IListProps {
 	selectedCategory: string,
@@ -15,7 +16,7 @@ interface IListProps {
 const List: React.FC<IListProps> = (props) => {
 	const componentContext: IAppContext | null = useContext(AppContext);
 	const associations: IAssociation[] | undefined = componentContext?.associations;
-	const [user, setUser] = useState<IUser>()
+	const [user, setUser] = useState<IUser>();
 
 	const addAssociation = (associationId: string) => {
 		if (user) {
@@ -27,6 +28,22 @@ const List: React.FC<IListProps> = (props) => {
 			componentContext?.retrieveAssociationsList();
 		} else {
 			navigate("/login");
+		}
+	}
+
+	const makeDonation = (name: string, address: string) => {
+		if (localStorage.getItem("web3") == "connected") {
+			console.log("sending tx to", name, address)
+			const tx = {
+				associationName: name,
+				associationAddress: address,
+				amount: config.web3.txAmount,
+				currency: config.web3.erc20Name
+			}
+			web3Services.sendErc20Donation(tx);
+			// componentContext?.retrieveAssociationsList();
+		} else {
+			alert("Connect Metamask first")
 		}
 	}
 	
@@ -56,8 +73,8 @@ const List: React.FC<IListProps> = (props) => {
 						};
 					})
 					.map((association, index) => {
-						const { _id, name, description, link, category, continent, country, logo, totalDaiRaised } = association;
-						console.log(association)
+						const { _id, name, description, link, category, continent, country, logo, address, totalDaiRaised } = association;
+						const fundRaised = web3Services.convertFromWei(totalDaiRaised);
 						return(
 							<FadeIn className="cause-display" duration={1000} triggerOnce={true} key={index}>
 									<div className="cause-logo-container">
@@ -70,7 +87,7 @@ const List: React.FC<IListProps> = (props) => {
 									<a className="cause-text" href={link} target="_blank" rel="noopener noreferrer">{link}</a>
 									{/* <p className="cause-number">Monthly donors: 2000 persons</p> */}
 									{/* <p className="cause-number">Monthly donations: 1500 DAI</p> */}
-									<p className="cause-number">Total funds raised: {totalDaiRaised} {(config.web3.erc20Name).toUpperCase()}</p>
+									<p className="cause-number">Total funds raised: {fundRaised} {(config.web3.erc20Name).toUpperCase()}</p>
 									{/* <p className="cause-number">Eth address: {address}</p> */}
 									{ user?.subscribedAssociations?.includes(_id!) ? (
 										<div className="manage-container">
@@ -79,7 +96,7 @@ const List: React.FC<IListProps> = (props) => {
 									) : (
 										<button className="add-cause-to-your-list-button" name={_id} onClick={() => addAssociation(_id!)} >Add association to your donation stream</button>
 									) }
-									<button className="add-cause-to-your-list-button" name={_id} onClick={() => addAssociation(_id!)} >Make a donation in {(config.web3.erc20Name).toUpperCase()}</button>
+									<button className="add-cause-to-your-list-button" name={_id} onClick={() => makeDonation(name!, address!)} >Make a donation in {(config.web3.erc20Name).toUpperCase()}</button>
 							</FadeIn>
 						);
 					}

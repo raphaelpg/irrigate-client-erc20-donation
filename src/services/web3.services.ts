@@ -1,6 +1,10 @@
 import config from '../config/config';
+import Web3 from 'web3';
+import { AbiItem } from 'web3-utils';
+import { ITransaction } from '../interfaces/Transaction';
+import ecr20Contract from '../contracts/Dai.json'
 
-export const connectWallet = async () => {
+const connectWallet = async () => {
   if (window.ethereum) {
     try {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -12,18 +16,21 @@ export const connectWallet = async () => {
         address: ""
       };
       if (networkId != config.web3.networkId) {
-        obj.connectedStatus = false,
-        obj.status = "🦊 Set network to Matic."
-        alert("Metamask must be set to Matic network")
+        obj.connectedStatus = false;
+        obj.status = "🦊 Set network to Matic.";
+        alert("Metamask must be set to Matic network");
+        localStorage.setItem("web3", "disconnected");
       } else {
-        obj.connectedStatus = true,
-        obj.status = "Connected",
-        obj.networkId = networkId,
-        obj.address = accounts[0]
+        obj.connectedStatus = true;
+        obj.status = "Connected";
+        obj.networkId = networkId;
+        obj.address = accounts[0];
+        localStorage.setItem("web3", "connected");
       };
       return obj;
     } catch (error) {
       if (error === 4001) {
+        localStorage.setItem("web3", "disconnected");
         return {
           connectedStatus: false,
           status: "Rejected by user.",
@@ -31,6 +38,7 @@ export const connectWallet = async () => {
           address: ""
         };
       } else {
+        localStorage.setItem("web3", "disconnected");
         return {
           connectedStatus: false,
           status: "🦊 Connect to Metamask using the button on the top right.",
@@ -40,6 +48,7 @@ export const connectWallet = async () => {
       };
     };
   } else {
+    localStorage.setItem("web3", "disconnected");
     console.log("Metamask not found");
     return {
       connectedStatus: false,
@@ -50,21 +59,60 @@ export const connectWallet = async () => {
   }; 
 };
 
-export const handleChainChanged = () =>{
+const handleChainChanged = () =>{
   window.location.reload();
 }
 
-export const handleAccountsChanged = (accounts: any, currentAddress: any, setter: any) => {
+const handleAccountsChanged = (accounts: any, currentAddress: any, setter: any) => {
   if (accounts.length === 0) {
     console.log('Please connect to MetaMask.');
+    localStorage.setItem("web3", "disconnected");
     window.location.reload();
   } else if (accounts[0] !== currentAddress) {
     setter(accounts[0]);
+    localStorage.setItem("web3", "connected");
   };
 };
+
+const sendErc20Donation = async (tx: ITransaction) => {
+  const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+  tx.donorAddress = accounts[0];
+  await fetch(config.server.serverUrl + config.server.sendDonation, {
+    method: 'POST',
+    body: JSON.stringify(tx),
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  })
+  .then(res => res.json()
+  )
+  .then(async (res) => {
+    console.log(res)
+    if (res.status == 201) {
+      console.log("sending fund via web3")
+      const web3 = new Web3(window.ethereum);
+      const amount = config.web3.txAmount;
+      const erc20Instance = new web3.eth.Contract(ecr20Contract.abi as AbiItem[], config.web3.erc20Address);
+      
+      await erc20Instance.methods.transfer(config.web3.irrigateAddress, amount)
+      .send({ from: accounts[0] })
+      .on('receipt', () => {
+        console.log("sent")
+        return true
+      })
+    }
+  })
+}
+
+const convertFromWei = (value: number) => {
+  return parseFloat(Web3.utils.fromWei(value.toString(), 'ether')).toFixed(2);
+}
 
 export const web3Services = {
   connectWallet,
   handleChainChanged,
-  handleAccountsChanged
+  handleAccountsChanged,
+  sendErc20Donation,
+  convertFromWei
 };

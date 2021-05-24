@@ -7,12 +7,12 @@ import config from '../../config/config';
 const ConnectWallet: React.FC = () => {
   const [isConnected, setConnectedStatus] = useState(false);
   const [walletAddress, setWallet] = useState("");
-  const [status, setStatus] = useState("");
+  // const [status, setStatus] = useState("");
 
   const connectToWeb3 = async () => {
     const walletResponse = await web3Services.connectWallet();
     setConnectedStatus(walletResponse.connectedStatus);
-    setStatus(walletResponse.status);
+    // setStatus(walletResponse.status);
     setWallet(walletResponse.address);
   }
 
@@ -29,17 +29,21 @@ const ConnectWallet: React.FC = () => {
           if (accounts.length) {
             setConnectedStatus(true);
             setWallet(accounts[0]);
+            localStorage.setItem("web3", "connected");
           } else {
             setConnectedStatus(false);
-            setStatus("🦊 Connect to Metamask using the top right button.");
+            // setStatus("🦊 Connect to Metamask using the top right button.");
+            localStorage.setItem("web3", "disconnected");
           }
         } else {
           setConnectedStatus(false);
-          setStatus("🦊 Set network to Matic.");
+          // setStatus("🦊 Set network to Matic.");
+          localStorage.setItem("web3", "disconnected");
         }
       } catch {
         setConnectedStatus(false);
-        setStatus("🦊 Connect to Metamask using the top right button.");
+        // setStatus("🦊 Connect to Metamask using the top right button.");
+        localStorage.setItem("web3", "disconnected");
       }
     }  
   }

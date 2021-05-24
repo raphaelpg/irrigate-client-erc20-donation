@@ -25,15 +25,17 @@ const SERVER = {
 	logIn: '/api/user/login',
   deleteUser: '/api/user/delete',
 	updateUser: '/api/user/updateSubscriptions',
-  sendMessage: '/api/message/add'
+  sendMessage: '/api/message/add',
+	sendDonation: '/api/donation/add'
 };
 
 const WEB3 = {
 	erc20Name: "dai",
-	erc20Address: "",
-	irrigateAddress: "",
+	erc20Address: "0xFEb61E25F90A32AefbBa42349744C8e1b0Fd99Ec",
+	irrigateAddress: "0x7E827CF179422Ba00DA2F23E40Ba835B65dFF53b",
 	// networkId: 137 //Matic
-	networkId: 5777 //Ganache 7545
+	networkId: 5777, //Ganache 7545
+	txAmount: "10000000000000000000"
 };
 
 const CATEGORIES = [

@@ -5,6 +5,9 @@ import { ITransaction } from '../interfaces/Transaction';
 import ecr20Contract from '../contracts/Dai.json'
 import React from 'react';
 
+const irrigateAddress = config.web3.irrigateAddress;
+const erc20Address = config.web3.erc20Address;
+
 const connectWallet = async () => {
   if (window.ethereum) {
     try {
@@ -94,9 +97,9 @@ const sendErc20Donation = async (tx: ITransaction) => {
     if (res.status == 201) {
       console.log("sending funds via web3")
       const web3 = new Web3(window.ethereum);
-      const erc20Instance = new web3.eth.Contract(ecr20Contract.abi as AbiItem[], config.web3.erc20Address);
+      const erc20Instance = new web3.eth.Contract(ecr20Contract.abi as AbiItem[], erc20Address);
       
-      await erc20Instance.methods.transfer(config.web3.irrigateAddress, tx.amount)
+      await erc20Instance.methods.transfer(irrigateAddress, tx.amount)
       .send({ from: accounts[0] })
       .on('receipt', () => {
         console.log("erc20 sent")
@@ -118,8 +121,6 @@ const subscribeToEvents = async (
   setDonationStatus: React.Dispatch<React.SetStateAction<number>>,
   retrieveAssociationsList: () => void
   ) => {
-    const irrigateAddress = config.web3.irrigateAddress;
-    const erc20Address = config.web3.erc20Address;
     const web3 = new Web3(window.ethereum);
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
     const erc20Instance = new web3.eth.Contract(ecr20Contract.abi as any, erc20Address);

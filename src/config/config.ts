@@ -35,7 +35,6 @@ const WEB3 = {
 	irrigateAddress: "0x01f26caFd6C4C5f56664Df8fb0F808e0A5574ADE",
 	// networkId: 137 //Matic
 	networkId: 5777, //Ganache 7545
-	// txAmount: "10000000000000000000"
 };
 
 const CATEGORIES = [

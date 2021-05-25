@@ -2,12 +2,12 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Link, navigate } from 'gatsby';
 import { IAppContext, AppContext } from '../../context/AppContext';
 import FadeIn from '../../effects/FadeIn';
+import DonationForm from '../Forms/donationForm';
+import config from '../../config/config';
+import UserServices from '../../services/user.service';
+import { web3Services } from '../../services/web3.services';
 import { IAssociation } from '../../interfaces/Association';
 import { IUser } from '../../interfaces/User';
-import UserServices from '../../services/user.service';
-import config from '../../config/config';
-import { web3Services } from '../../services/web3.services';
-import DonationForm from '../Forms/donationForm';
 
 interface IListProps {
 	selectedCategory: string,
@@ -43,21 +43,6 @@ const List: React.FC<IListProps> = (props) => {
 		}
 	}
 
-	// const makeDonation = (name: string, address: string) => {
-	// 	if (localStorage.getItem("web3") == "connected") {
-	// 		console.log("sending tx to", name, address)
-	// 		const tx = {
-	// 			associationName: name,
-	// 			associationAddress: address,
-	// 			amount: config.web3.txAmount,
-	// 			currency: config.web3.erc20Name
-	// 		}
-	// 		web3Services.sendErc20Donation(tx, componentContext?.retrieveAssociationsList)
-	// 	} else {
-	// 		alert("Connect Metamask first")
-	// 	}
-	// }
-	
 	useEffect(() => {
 		componentContext?.retrieveAssociationsList();
 		const user = UserServices.getCurrentUser();
@@ -99,7 +84,6 @@ const List: React.FC<IListProps> = (props) => {
 									{/* <p className="cause-number">Monthly donors: 2000 persons</p> */}
 									{/* <p className="cause-number">Monthly donations: 1500 DAI</p> */}
 									<p className="cause-number">Total funds raised: {fundRaised} {(config.web3.erc20Name).toUpperCase()}</p>
-									{/* <p className="cause-number">Eth address: {address}</p> */}
 									{ user?.subscribedAssociations?.includes(_id!) ? (
 										<div className="manage-container">
 											<Link className="manageAssociation-button" to="/account">Manage</Link>
@@ -107,7 +91,6 @@ const List: React.FC<IListProps> = (props) => {
 									) : (
 										<button className="add-cause-to-your-list-button" name={_id} onClick={() => addAssociation(_id!)} >Add association to your donation stream</button>
 									) }
-									{/* <button className="add-cause-to-your-list-button" name={_id} onClick={() => makeDonation(name!, address!)} >Make a donation in {(config.web3.erc20Name).toUpperCase()}</button> */}
 									<button className="add-cause-to-your-list-button" name={_id} 
 										onClick={() => handleDonationButton(name!, address!)} 
 									>Make a donation in {(config.web3.erc20Name).toUpperCase()}</button>

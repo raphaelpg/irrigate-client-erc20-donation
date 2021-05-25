@@ -108,8 +108,8 @@ const sendErc20Donation = async (tx: ITransaction) => {
   })
 }
 
-const convertFromWei = (value: number) => {
-  return parseFloat(Web3.utils.fromWei(value.toString(), 'ether')).toFixed(2);
+const convertFromWei = (value: string) => {
+  return parseFloat(Web3.utils.fromWei(value, 'ether')).toFixed(2);
 }
 
 const convertToWei = (value: string) => {

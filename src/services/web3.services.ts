@@ -3,6 +3,7 @@ import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import { ITransaction } from '../interfaces/Transaction';
 import ecr20Contract from '../contracts/Dai.json'
+import React from 'react';
 
 const connectWallet = async () => {
   if (window.ethereum) {
@@ -112,11 +113,49 @@ const convertToWei = (value: string) => {
   return Web3.utils.toWei(value, 'ether')
 }
 
+const subscribeToEvents = async (
+  newDonation: ITransaction,
+  setDonationStatus: React.Dispatch<React.SetStateAction<number>>,
+  retrieveAssociationsList: () => void
+  ) => {
+    const irrigateAddress = config.web3.irrigateAddress;
+    const erc20Address = config.web3.erc20Address;
+    const web3 = new Web3(window.ethereum);
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const erc20Instance = new web3.eth.Contract(ecr20Contract.abi as any, erc20Address);
+    await erc20Instance.events.Transfer({
+      filter: { src: accounts[0], dst: irrigateAddress },
+      fromBlock: "latest"
+    })
+    .on("connected", () => {
+      console.log("ERC20 IN LISTENER: Started");
+    })
+    .on('data', async (event: any) => {
+      if (event.returnValues.wad == newDonation.amount.toString()) {
+        console.log("Donation received");
+        setDonationStatus(2);
+        await erc20Instance.events.Transfer({
+          filter: { src: irrigateAddress, dst: newDonation.associationAddress },
+          fromBlock: "latest"
+        })
+        .on("connected", () => {
+          console.log("ERC20 OUT LISTENER: Started");
+        })
+        .on('data', async () => {
+          console.log("Donation transferred");
+          setDonationStatus(3);
+          retrieveAssociationsList();
+        })
+      }
+  })
+}
+
 export const web3Services = {
   connectWallet,
   handleChainChanged,
   handleAccountsChanged,
   sendErc20Donation,
   convertFromWei,
-  convertToWei
+  convertToWei,
+  subscribeToEvents
 };

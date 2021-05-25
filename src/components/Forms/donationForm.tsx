@@ -13,8 +13,7 @@ interface IDonationForm {
 const DonationForm: React.FC<IDonationForm> = (props) => {
   const componentContext: IAppContext | null = useContext(AppContext);
   const retrieveAssociationsList = componentContext?.retrieveAssociationsList;
-  const [donationStatus, setDonationStatus] = useState<{code: number, msg: string}>({code: 0, msg: "none"});
-  // const [responseMsg, setResponseMsg] = useState<string>('');
+  const [donationStatus, setDonationStatus] = useState<{code: number, msg: string}>({code: 0, msg: ""});
   const initialDonation = {
     "associationName": "",
     "associationAddress": "",
@@ -34,16 +33,16 @@ const DonationForm: React.FC<IDonationForm> = (props) => {
   }, [props.donationParams])
 
   const closeDonationForm = () => {
-    setDonationStatus({code: 0, msg: "none"});
+    setDonationStatus({code: 0, msg: ""});
     setNewDonation(initialDonation);
     props.handleDonation(false);
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
+  const handleAmount = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setNewDonation(prevNewDonation => ({
       ...prevNewDonation,
-      [name]: value,
+      [name]: value.toString(),
     }));
   };
 
@@ -51,9 +50,7 @@ const DonationForm: React.FC<IDonationForm> = (props) => {
     if (localStorage.getItem("web3") == "connected") {
       const balanceCheck = await web3Services.checkUserERC20Balance(newDonation.amount); 
       if (balanceCheck) {
-        // setDonationStatus(1);
         web3Services.sendErc20Donation(newDonation, setDonationStatus)
-        console.log("sending tx to", newDonation.associationName, newDonation.associationAddress)
         web3Services.subscribeToEvents(newDonation, setDonationStatus, retrieveAssociationsList);
       } else {
         alert("Insufficient funds");
@@ -84,13 +81,6 @@ const DonationForm: React.FC<IDonationForm> = (props) => {
           :
           donationStatus.code == 3 ?
           <div className="donationFormLogContainer">
-            {/* <div>Success, your donation has been transferred to the association</div> */}
-            <div>{donationStatus.msg}</div>
-            <button className="introduction-button irrigateFormButton" onClick={() => closeDonationForm()}>Ok</button>
-          </div>
-          :
-          donationStatus.code == 4 ?
-          <div className="donationFormLogContainer">
             <div>{donationStatus.msg}</div>
             <button className="introduction-button irrigateFormButton" onClick={() => closeDonationForm()}>Ok</button>
           </div>
@@ -98,10 +88,10 @@ const DonationForm: React.FC<IDonationForm> = (props) => {
           <div className="donationFormBottomContainer">
             <label className="formLabel">Amount in {config.web3.erc20Name}:
               <input 
-                type="text" 
+                type="number" 
                 name="amount" 
                 id="amount" 
-                onChange={handleChange}
+                onChange={handleAmount}
                 value={newDonation.amount}
                 required
               />

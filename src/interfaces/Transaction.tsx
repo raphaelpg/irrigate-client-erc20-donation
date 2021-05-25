@@ -5,5 +5,6 @@ export interface ITransaction {
   donorName?: string,
   donorEmail?: string,
   donorAddress?: string,
-  currency: string
+  currency: string,
+  fundsStatus?: string
 };

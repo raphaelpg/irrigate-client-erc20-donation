@@ -26,13 +26,14 @@ const SERVER = {
   deleteUser: '/api/user/delete',
 	updateUser: '/api/user/updateSubscriptions',
   sendMessage: '/api/message/add',
-	sendDonation: '/api/donation/add'
+	sendDonation: '/api/donation/add',
+	deleteDonation: '/api/donation/delete'
 };
 
 const WEB3 = {
 	erc20Name: "dai",
-	erc20Address: "0x4D63185a5A2A954afEc2cD56126839975506C6C1",
-	irrigateAddress: "0x01f26caFd6C4C5f56664Df8fb0F808e0A5574ADE",
+	erc20Address: "0x4E34127A67577327B87CD13623aB53FCC0d54a08",
+	irrigateAddress: "0xBDCb6839245f007FF62485eCd4935E17167a2A0B",
 	// networkId: 137 //Matic
 	networkId: 5777, //Ganache 7545
 };

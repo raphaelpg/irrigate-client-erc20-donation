@@ -111,6 +111,15 @@ const sendErc20Donation = async (
         })
         .on('error', () => {
           setDonationStatus({code: 3, msg: "Transaction rejected by user"});
+          tx.fundsStatus = "pending";
+          fetch(config.server.serverUrl + config.server.deleteDonation, {
+            method: 'DELETE',
+            body: JSON.stringify(tx),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            }
+          })
         })
       } else {
         setDonationStatus({code: 3, msg: "Server error, please retry later"});

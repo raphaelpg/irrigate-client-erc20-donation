@@ -78,7 +78,7 @@ const handleAccountsChanged = (accounts: any, currentAddress: any, setter: any) 
   };
 };
 
-const sendErc20Donation = async (tx: ITransaction) => {
+const sendErc20Donation = async (tx: ITransaction, setDonationStatus: React.Dispatch<React.SetStateAction<number>>) => {
   tx.amount = Web3.utils.toWei(tx.amount, 'ether'); 
   const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
   tx.donorAddress = accounts[0];
@@ -95,7 +95,8 @@ const sendErc20Donation = async (tx: ITransaction) => {
   .then(async (res) => {
     console.log(res)
     if (res.status == 201) {
-      console.log("sending funds via web3")
+      setDonationStatus(1);
+      console.log("Server on, waiting for funds via web3");
       const web3 = new Web3(window.ethereum);
       const erc20Instance = new web3.eth.Contract(ecr20Contract.abi as AbiItem[], erc20Address);
       
@@ -104,8 +105,16 @@ const sendErc20Donation = async (tx: ITransaction) => {
       .on('receipt', () => {
         console.log("erc20 sent")
       })
+    } else {
+      setDonationStatus(4);
+      console.log("Server error, please retry later");
     }
   })
+  .catch(error => {
+    console.log(error.message);
+    setDonationStatus(4);
+    console.log("Server error, please retry later");
+  });
 }
 
 const convertFromWei = (value: string) => {
@@ -151,6 +160,20 @@ const subscribeToEvents = async (
   })
 }
 
+const checkUserERC20Balance = async (min: string) => {
+  const web3 = new Web3(window.ethereum);
+  const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+  const erc20Instance = new web3.eth.Contract(ecr20Contract.abi as any, erc20Address);
+
+  let userBalance = await erc20Instance.methods.balanceOf(accounts[0]).call();
+  userBalance = web3.utils.fromWei(userBalance, 'ether');
+  if (parseInt(userBalance) >= parseInt(min)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 export const web3Services = {
   connectWallet,
   handleChainChanged,
@@ -158,5 +181,6 @@ export const web3Services = {
   sendErc20Donation,
   convertFromWei,
   convertToWei,
-  subscribeToEvents
+  subscribeToEvents,
+  checkUserERC20Balance
 };

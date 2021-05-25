@@ -48,13 +48,19 @@ const DonationForm: React.FC<IDonationForm> = (props) => {
   };
 
   const makeDonation = async () => {
-    setDonationStatus(1);
-		if (localStorage.getItem("web3") == "connected") {
-			console.log("sending tx to", newDonation.associationName, newDonation.associationAddress)
-      web3Services.sendErc20Donation(newDonation)
-      web3Services.subscribeToEvents(newDonation, setDonationStatus, retrieveAssociationsList);
+    if (localStorage.getItem("web3") == "connected") {
+      const balanceCheck = await web3Services.checkUserERC20Balance(newDonation.amount); 
+      if (balanceCheck) {
+        // setDonationStatus(1);
+        web3Services.sendErc20Donation(newDonation, setDonationStatus)
+        console.log("sending tx to", newDonation.associationName, newDonation.associationAddress)
+        web3Services.subscribeToEvents(newDonation, setDonationStatus, retrieveAssociationsList);
+      } else {
+        alert("Insufficient funds");
+        closeDonationForm();
+      }
 		} else {
-			alert("Connect Metamask first")
+			alert("Connect Metamask first");
 		}
 	}
 
@@ -79,6 +85,12 @@ const DonationForm: React.FC<IDonationForm> = (props) => {
           donationStatus == 3 ?
           <div className="donationFormLogContainer">
             <div>Success, your donation has been transferred to the association</div>
+            <button className="introduction-button irrigateFormButton" onClick={() => closeDonationForm()}>Ok</button>
+          </div>
+          :
+          donationStatus == 4 ?
+          <div className="donationFormLogContainer">
+            <div>Service unavailable for the moment, please retry later</div>
             <button className="introduction-button irrigateFormButton" onClick={() => closeDonationForm()}>Ok</button>
           </div>
           :

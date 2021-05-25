@@ -13,7 +13,7 @@ interface IDonationForm {
 const DonationForm: React.FC<IDonationForm> = (props) => {
   const componentContext: IAppContext | null = useContext(AppContext);
   const retrieveAssociationsList = componentContext?.retrieveAssociationsList;
-  const [donationStatus, setDonationStatus] = useState<number>(0);
+  const [donationStatus, setDonationStatus] = useState<{code: number, msg: string}>({code: 0, msg: "none"});
   // const [responseMsg, setResponseMsg] = useState<string>('');
   const initialDonation = {
     "associationName": "",
@@ -34,7 +34,7 @@ const DonationForm: React.FC<IDonationForm> = (props) => {
   }, [props.donationParams])
 
   const closeDonationForm = () => {
-    setDonationStatus(0);
+    setDonationStatus({code: 0, msg: "none"});
     setNewDonation(initialDonation);
     props.handleDonation(false);
   }
@@ -71,26 +71,27 @@ const DonationForm: React.FC<IDonationForm> = (props) => {
         <button className="closeButton" onClick={() => props.handleDonation(false)}>x</button>
       </div> 
       <div className="irrigateForm">
-        {donationStatus == 1 ? 
+        {donationStatus.code == 1 ? 
           <div className="donationFormLogContainer">
             <div>...waiting for wallet confirmation</div>
           </div>
           :
-          donationStatus == 2 ?
+          donationStatus.code == 2 ?
           <div className="donationFormLogContainer">
             <div>Irrigate received your transfer</div><br></br>
             <div>...Transferring to association</div>
           </div>
           :
-          donationStatus == 3 ?
+          donationStatus.code == 3 ?
           <div className="donationFormLogContainer">
-            <div>Success, your donation has been transferred to the association</div>
+            {/* <div>Success, your donation has been transferred to the association</div> */}
+            <div>{donationStatus.msg}</div>
             <button className="introduction-button irrigateFormButton" onClick={() => closeDonationForm()}>Ok</button>
           </div>
           :
-          donationStatus == 4 ?
+          donationStatus.code == 4 ?
           <div className="donationFormLogContainer">
-            <div>Service unavailable for the moment, please retry later</div>
+            <div>{donationStatus.msg}</div>
             <button className="introduction-button irrigateFormButton" onClick={() => closeDonationForm()}>Ok</button>
           </div>
           :

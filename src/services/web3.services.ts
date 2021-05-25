@@ -78,43 +78,51 @@ const handleAccountsChanged = (accounts: any, currentAddress: any, setter: any) 
   };
 };
 
-const sendErc20Donation = async (tx: ITransaction, setDonationStatus: React.Dispatch<React.SetStateAction<number>>) => {
-  tx.amount = Web3.utils.toWei(tx.amount, 'ether'); 
-  const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-  tx.donorAddress = accounts[0];
-  await fetch(config.server.serverUrl + config.server.sendDonation, {
-    method: 'POST',
-    body: JSON.stringify(tx),
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  })
-  .then(res => res.json()
-  )
-  .then(async (res) => {
-    console.log(res)
-    if (res.status == 201) {
-      setDonationStatus(1);
-      console.log("Server on, waiting for funds via web3");
-      const web3 = new Web3(window.ethereum);
-      const erc20Instance = new web3.eth.Contract(ecr20Contract.abi as AbiItem[], erc20Address);
-      
-      await erc20Instance.methods.transfer(irrigateAddress, tx.amount)
-      .send({ from: accounts[0] })
-      .on('receipt', () => {
-        console.log("erc20 sent")
-      })
-    } else {
-      setDonationStatus(4);
+const sendErc20Donation = async (
+  tx: ITransaction, 
+  setDonationStatus: React.Dispatch<React.SetStateAction<{
+    code: number;
+    msg: string;
+  }>>
+  ) => {
+    tx.amount = Web3.utils.toWei(tx.amount, 'ether'); 
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    tx.donorAddress = accounts[0];
+    await fetch(config.server.serverUrl + config.server.sendDonation, {
+      method: 'POST',
+      body: JSON.stringify(tx),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
+    .then(res => res.json()
+    )
+    .then(async (res) => {
+      console.log(res)
+      if (res.status == 201) {
+        setDonationStatus({code: 1, msg: ""});
+        console.log("Server on, waiting for funds via web3");
+        const web3 = new Web3(window.ethereum);
+        const erc20Instance = new web3.eth.Contract(ecr20Contract.abi as AbiItem[], erc20Address);
+        
+        await erc20Instance.methods.transfer(irrigateAddress, tx.amount)
+        .send({ from: accounts[0] })
+        .on('receipt', () => {
+          console.log("erc20 sent")
+        })
+        .on('error', () => {
+          setDonationStatus({code: 3, msg: "Transaction rejected by user"});
+        })
+      } else {
+        setDonationStatus({code: 3, msg: "Server error, please retry later"});
+      }
+    })
+    .catch(error => {
+      console.log(error.message);
+      setDonationStatus({code: 3, msg: "Server error, please retry later"});
       console.log("Server error, please retry later");
-    }
-  })
-  .catch(error => {
-    console.log(error.message);
-    setDonationStatus(4);
-    console.log("Server error, please retry later");
-  });
+    });
 }
 
 const convertFromWei = (value: string) => {
@@ -127,7 +135,10 @@ const convertToWei = (value: string) => {
 
 const subscribeToEvents = async (
   newDonation: ITransaction,
-  setDonationStatus: React.Dispatch<React.SetStateAction<number>>,
+  setDonationStatus: React.Dispatch<React.SetStateAction<{
+    code: number;
+    msg: string;
+  }>>,
   retrieveAssociationsList: () => void
   ) => {
     const web3 = new Web3(window.ethereum);
@@ -143,7 +154,7 @@ const subscribeToEvents = async (
     .on('data', async (event: any) => {
       if (event.returnValues.wad == newDonation.amount.toString()) {
         console.log("Donation received");
-        setDonationStatus(2);
+        setDonationStatus({code: 2, msg: ""});
         await erc20Instance.events.Transfer({
           filter: { src: irrigateAddress, dst: newDonation.associationAddress },
           fromBlock: "latest"
@@ -153,7 +164,7 @@ const subscribeToEvents = async (
         })
         .on('data', async () => {
           console.log("Donation transferred");
-          setDonationStatus(3);
+          setDonationStatus({code: 3, msg:"Success, your donation has been transferred to the association"});
           retrieveAssociationsList();
         })
       }

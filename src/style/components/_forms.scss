@@ -148,3 +148,16 @@
   display: flex;
   justify-content: center;
 }
+
+.donationFormBottomContainer {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  text-align: left;
+  width: 100%;
+}
+.donationFormLogContainer {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}

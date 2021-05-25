@@ -74,7 +74,7 @@ const handleAccountsChanged = (accounts: any, currentAddress: any, setter: any) 
   };
 };
 
-const sendErc20Donation = async (tx: ITransaction, callback: () => void) => {
+const sendErc20Donation = async (tx: ITransaction) => {
   tx.amount = Web3.utils.toWei(tx.amount, 'ether'); 
   const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
   tx.donorAddress = accounts[0];
@@ -99,7 +99,6 @@ const sendErc20Donation = async (tx: ITransaction, callback: () => void) => {
       .send({ from: accounts[0] })
       .on('receipt', () => {
         console.log("erc20 sent")
-        callback();
       })
     }
   })

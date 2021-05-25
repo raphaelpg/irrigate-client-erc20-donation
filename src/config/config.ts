@@ -31,11 +31,11 @@ const SERVER = {
 
 const WEB3 = {
 	erc20Name: "dai",
-	erc20Address: "0x339AF2d236d7Ae04991f27eFe0FCC58471FcA061",
-	irrigateAddress: "0x8eB1Aa90917AD9Cce14D2b675Bbbfeb43b09e28B",
+	erc20Address: "0x4D63185a5A2A954afEc2cD56126839975506C6C1",
+	irrigateAddress: "0x01f26caFd6C4C5f56664Df8fb0F808e0A5574ADE",
 	// networkId: 137 //Matic
 	networkId: 5777, //Ganache 7545
-	txAmount: "10000000000000000000"
+	// txAmount: "10000000000000000000"
 };
 
 const CATEGORIES = [

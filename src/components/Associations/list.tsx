@@ -8,6 +8,7 @@ import UserServices from '../../services/user.service';
 import { web3Services } from '../../services/web3.services';
 import { IAssociation } from '../../interfaces/Association';
 import { IUser } from '../../interfaces/User';
+import ClipLoader from "react-spinners/ClipLoader";
 
 interface IListProps {
 	selectedCategory: string,
@@ -53,7 +54,8 @@ const List: React.FC<IListProps> = (props) => {
 		}
 	}, []);
 
-	if (associations != undefined) {
+	// if (associations != undefined) {
+	if (associations.length != 0) {
 		return (
 			<div className="causes-list-container">
 				{associations
@@ -107,7 +109,9 @@ const List: React.FC<IListProps> = (props) => {
 		);
 	} else {
 		return (
-			<div className="causes-list-container">Loading...</div>
+			<div className="spinnerContainer">
+				<ClipLoader color="darkgreen" size={100} />
+			</div>
 		);
 	};
 };

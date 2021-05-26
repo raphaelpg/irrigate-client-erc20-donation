@@ -32,8 +32,8 @@ const SERVER = {
 
 const WEB3 = {
 	erc20Name: "dai",
-	erc20Address: "0x4E34127A67577327B87CD13623aB53FCC0d54a08",
-	irrigateAddress: "0xBDCb6839245f007FF62485eCd4935E17167a2A0B",
+	erc20Address: "0x211bf60eC55d300240fA8521cd75F375A0919AF3",
+	irrigateAddress: "0x21Afe1F645B1996e0A8ec9205A472acA634a7042",
 	// networkId: 137 //Matic
 	networkId: 5777, //Ganache 7545
 };

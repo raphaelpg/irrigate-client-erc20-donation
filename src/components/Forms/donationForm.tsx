@@ -3,6 +3,7 @@ import config from '../../config/config';
 import { web3Services } from '../../services/web3.services';
 import { ITransaction } from '../../interfaces/Transaction';
 import { IAppContext, AppContext } from '../../context/AppContext';
+import ClipLoader from "react-spinners/ClipLoader";
 
 interface IDonationForm {
   handleDonation: (status: boolean) => void;
@@ -70,13 +71,19 @@ const DonationForm: React.FC<IDonationForm> = (props) => {
       <div className="irrigateForm">
         {donationStatus.code == 1 ? 
           <div className="donationFormLogContainer">
-            <div>...waiting for wallet confirmation</div>
+            <div className="donationFormLogContainer1">
+              <ClipLoader color="darkgreen" size={20} css={`margin: 1%;`} />
+              <div>...waiting for wallet confirmation</div>
+            </div>
           </div>
           :
           donationStatus.code == 2 ?
           <div className="donationFormLogContainer">
             <div>Irrigate received your transfer</div><br></br>
-            <div>...Transferring to association</div>
+            <div className="donationFormLogContainer1">
+              <ClipLoader color="darkgreen" size={20} css={`margin: 1%`} />
+              <div>...Transferring to association</div>
+            </div>
           </div>
           :
           donationStatus.code == 3 ?

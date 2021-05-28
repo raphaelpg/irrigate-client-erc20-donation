@@ -2,7 +2,8 @@ import config from '../config/config';
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import { ITransaction } from '../interfaces/Transaction';
-import ecr20Contract from '../contracts/Dai.json'
+import erc20Contract from '../contracts/Dai.json'
+import irrigateContract from '../contracts/Irrigate.json'
 import React from 'react';
 
 const irrigateAddress = config.web3.irrigateAddress;
@@ -79,15 +80,15 @@ const handleAccountsChanged = (accounts: any, currentAddress: any, setter: any) 
 };
 
 const sendErc20Donation = async (
-  tx: ITransaction, 
-  setDonationStatus: React.Dispatch<React.SetStateAction<{
-    code: number;
-    msg: string;
-  }>>
+  tx: ITransaction,
+  donationStatus: { code: number; msg: string; }, 
+  setDonationStatus: React.Dispatch<React.SetStateAction<{ code: number; msg: string; }>>,
+  retrieveAssociationsList: () => void
   ) => {
-    tx.amount = Web3.utils.toWei(tx.amount, 'ether'); 
+    let PROCESS_STATUS = 0;
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
     tx.donorAddress = accounts[0];
+    tx.amount = Web3.utils.toWei(tx.amount, 'ether');
     await fetch(config.server.serverUrl + config.server.sendDonation, {
       method: 'POST',
       body: JSON.stringify(tx),
@@ -101,13 +102,46 @@ const sendErc20Donation = async (
     .then(async (res) => {
       if (res.status == 201) {
         setDonationStatus({code: 1, msg: ""});
+        PROCESS_STATUS = 1;
+        const txId: string = res.msg
         const web3 = new Web3(window.ethereum);
-        const erc20Instance = new web3.eth.Contract(ecr20Contract.abi as AbiItem[], erc20Address);
-        
-        await erc20Instance.methods.transfer(irrigateAddress, tx.amount)
+        const erc20Instance = new web3.eth.Contract(erc20Contract.abi as AbiItem[], erc20Address);
+        const currentBlock = await web3.eth.getBlockNumber();
+
+        const irrigateInstance = new web3.eth.Contract(irrigateContract.abi as any, irrigateAddress);
+        irrigateInstance.events.TokenTransfer({
+          fromBlock: currentBlock,
+        })
+        .on("connected", () => {
+          console.log("ERC20 OUT LISTENER: Started");
+        })
+        .on('data', (event: any) => {
+          if (event.returnValues.donationId == txId) {
+            console.log("Donation transferred");
+            PROCESS_STATUS = 3;
+            if (donationStatus.code == 1 || donationStatus.code == 2) {
+              setDonationStatus({code: 3, msg:"Success, your donation has been transferred to the association"});
+            }
+            retrieveAssociationsList();
+          }
+        })
+        .on('error', () => {
+          setDonationStatus({code: 3, msg: "Server error, please retry later"});
+        })
+
+        erc20Instance.methods.transfer(irrigateAddress, tx.amount)
         .send({ from: accounts[0] })
-        .on('receipt', () => {
-          // console.log("erc20 sent")
+        .on('receipt', async (receipt: any) => {
+          const data = receipt.events.Transfer.returnValues;
+          if ((data.src).toLowerCase() == (accounts[0]).toLowerCase() && (data.dst).toLowerCase() == (irrigateAddress).toLowerCase()) {
+            if (PROCESS_STATUS == 1) {
+              PROCESS_STATUS = 2;
+              setDonationStatus({code: 2, msg: ""});
+            } else if (PROCESS_STATUS == 3) {
+              setDonationStatus({code: 3, msg:"Success, your donation has been transferred to the association"});
+              retrieveAssociationsList();
+            }
+          }
         })
         .on('error', () => {
           setDonationStatus({code: 3, msg: "Transaction rejected by user"});
@@ -121,6 +155,7 @@ const sendErc20Donation = async (
             }
           })
         })
+        
       } else {
         setDonationStatus({code: 3, msg: "Server error, please retry later"});
       }
@@ -140,47 +175,10 @@ const convertToWei = (value: string) => {
   return Web3.utils.toWei(value, 'ether')
 }
 
-const subscribeToEvents = async (
-  newDonation: ITransaction,
-  setDonationStatus: React.Dispatch<React.SetStateAction<{
-    code: number;
-    msg: string;
-  }>>,
-  retrieveAssociationsList: () => void
-  ) => {
-    const web3 = new Web3(window.ethereum);
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    const erc20Instance = new web3.eth.Contract(ecr20Contract.abi as any, erc20Address);
-    await erc20Instance.events.Transfer({
-      filter: { src: accounts[0], dst: irrigateAddress },
-      fromBlock: "latest"
-    })
-    .on("connected", () => {
-      console.log("ERC20 IN LISTENER: Started");
-    })
-    .on('data', async (event: any) => {
-      if (event.returnValues.wad == newDonation.amount.toString()) {
-        setDonationStatus({code: 2, msg: ""});
-        await erc20Instance.events.Transfer({
-          filter: { src: irrigateAddress, dst: newDonation.associationAddress },
-          fromBlock: "latest"
-        })
-        .on("connected", () => {
-          console.log("ERC20 OUT LISTENER: Started");
-        })
-        .on('data', async () => {
-          console.log("Donation transferred");
-          setDonationStatus({code: 3, msg:"Success, your donation has been transferred to the association"});
-          retrieveAssociationsList();
-        })
-      }
-  })
-}
-
 const checkUserERC20Balance = async (min: string) => {
   const web3 = new Web3(window.ethereum);
   const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-  const erc20Instance = new web3.eth.Contract(ecr20Contract.abi as any, erc20Address);
+  const erc20Instance = new web3.eth.Contract(erc20Contract.abi as any, erc20Address);
 
   let userBalance = await erc20Instance.methods.balanceOf(accounts[0]).call();
   userBalance = web3.utils.fromWei(userBalance, 'ether');
@@ -198,6 +196,5 @@ export const web3Services = {
   sendErc20Donation,
   convertFromWei,
   convertToWei,
-  subscribeToEvents,
   checkUserERC20Balance
 };

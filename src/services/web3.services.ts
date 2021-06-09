@@ -24,7 +24,7 @@ const connectWallet = async () => {
       if (networkId != config.web3.networkId) {
         obj.connectedStatus = false;
         obj.status = "🦊 Set network to Matic.";
-        alert("Metamask must be set to Matic network");
+        alert("Metamask must be set to Matic Mumbai-Testnet network: https://docs.matic.network/docs/develop/metamask/config-matic/");
         localStorage.setItem("web3", "disconnected");
       } else {
         obj.connectedStatus = true;

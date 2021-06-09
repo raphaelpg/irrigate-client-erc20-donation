@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { web3Services } from '../../services/web3.services';
 import config from '../../config/config';
-// import React, { useState, useContext } from 'react';
-// import associationService from '../../services/associations.service';
 
 const ConnectWallet: React.FC = () => {
   const [isConnected, setConnectedStatus] = useState(false);
   const [walletAddress, setWallet] = useState("");
-  // const [status, setStatus] = useState("");
 
   const connectToWeb3 = async () => {
     const walletResponse = await web3Services.connectWallet();
     setConnectedStatus(walletResponse.connectedStatus);
-    // setStatus(walletResponse.status);
     setWallet(walletResponse.address);
   }
 

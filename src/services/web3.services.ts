@@ -85,7 +85,6 @@ const sendErc20Donation = async (
   setDonationStatus: React.Dispatch<React.SetStateAction<{ code: number; msg: string; }>>,
   retrieveAssociationsList: () => void
   ) => {
-    let PROCESS_STATUS = 0;
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
     tx.donorAddress = accounts[0];
     tx.amount = Web3.utils.toWei(tx.amount, 'ether');
@@ -102,11 +101,29 @@ const sendErc20Donation = async (
     .then(async (res) => {
       if (res.status == 201) {
         setDonationStatus({code: 1, msg: ""});
-        PROCESS_STATUS = 1;
         const txId: string = res.msg
         const web3 = new Web3(window.ethereum);
-        const erc20Instance = new web3.eth.Contract(erc20Contract.abi as AbiItem[], erc20Address);
         const currentBlock = await web3.eth.getBlockNumber();
+        
+        const erc20Instance = new web3.eth.Contract(erc20Contract.abi as AbiItem[], erc20Address);
+        erc20Instance.events.Transfer({
+          fromBlock: currentBlock,
+        })
+        .on("connected", () => {
+          console.log("ERC20 IN LISTENER: Started");
+        })
+        .on('data', (event: any) => {
+          let eventSender = event.returnValues[0].toLowerCase();
+          let eventReceiver = event.returnValues[1].toLowerCase();
+          let eventValue = event.returnValues[2];
+          if (eventSender == accounts[0].toLowerCase() && eventReceiver == irrigateAddress.toLowerCase() && eventValue == tx.amount) {
+            console.log("Donation received by Irrigate");
+            setDonationStatus({code: 2, msg: ""});
+          }
+        })
+        .on('error', () => {
+          setDonationStatus({code: 3, msg: "Server error, please retry later"});
+        })
 
         const irrigateInstance = new web3.eth.Contract(irrigateContract.abi as any, irrigateAddress);
         irrigateInstance.events.TokenTransfer({
@@ -118,7 +135,6 @@ const sendErc20Donation = async (
         .on('data', (event: any) => {
           if (event.returnValues.donationId == txId) {
             console.log("Donation transferred");
-            PROCESS_STATUS = 3;
             setDonationStatus({code: 3, msg:"Success, your donation has been transferred to the association"});
             retrieveAssociationsList();
           }
@@ -129,18 +145,6 @@ const sendErc20Donation = async (
 
         erc20Instance.methods.transfer(irrigateAddress, tx.amount)
         .send({ from: accounts[0] })
-        .on('receipt', async (receipt: any) => {
-          const data = receipt.events.Transfer.returnValues;
-          if ((data[0]).toLowerCase() == (accounts[0]).toLowerCase() && (data[1]).toLowerCase() == (irrigateAddress).toLowerCase()) {
-            if (PROCESS_STATUS == 1) {
-              PROCESS_STATUS = 2;
-              setDonationStatus({code: 2, msg: ""});
-            } else if (PROCESS_STATUS == 3) {
-              setDonationStatus({code: 3, msg:"Success, your donation has been transferred to the association"});
-              retrieveAssociationsList();
-            }
-          }
-        })
         .on('error', () => {
           setDonationStatus({code: 3, msg: "Transaction rejected by user"});
           tx.fundsStatus = "pending";

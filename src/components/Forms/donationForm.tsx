@@ -60,7 +60,7 @@ const DonationForm: React.FC<IDonationForm> = (props) => {
 			alert("Connect Metamask first");
 		}
 	}
-
+  
   return(
     <div className="formContainer" style={props.displayForm ? {"display":"flex"} : {"display":"none"}}>
       <div className="formTitle">

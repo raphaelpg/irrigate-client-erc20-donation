@@ -51,7 +51,7 @@ const DonationForm: React.FC<IDonationForm> = (props) => {
     if (localStorage.getItem("web3") == "connected") {
       const balanceCheck = await web3Services.checkUserERC20Balance(newDonation.amount); 
       if (balanceCheck) {
-        await web3Services.sendErc20Donation(newDonation, donationStatus, setDonationStatus, retrieveAssociationsList);
+        await web3Services.sendErc20Donation(newDonation, setDonationStatus, retrieveAssociationsList);
       } else {
         alert("Insufficient funds");
         closeDonationForm();

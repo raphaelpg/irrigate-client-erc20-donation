@@ -82,7 +82,6 @@ const handleAccountsChanged = (accounts: any, currentAddress: any, setter: any) 
 
 const sendErc20Donation = async (
   tx: ITransaction,
-  donationStatus: { code: number; msg: string; }, 
   setDonationStatus: React.Dispatch<React.SetStateAction<{ code: number; msg: string; }>>,
   retrieveAssociationsList: () => void
   ) => {
@@ -120,9 +119,7 @@ const sendErc20Donation = async (
           if (event.returnValues.donationId == txId) {
             console.log("Donation transferred");
             PROCESS_STATUS = 3;
-            if (donationStatus.code == 1 || donationStatus.code == 2) {
-              setDonationStatus({code: 3, msg:"Success, your donation has been transferred to the association"});
-            }
+            setDonationStatus({code: 3, msg:"Success, your donation has been transferred to the association"});
             retrieveAssociationsList();
           }
         })
@@ -134,7 +131,7 @@ const sendErc20Donation = async (
         .send({ from: accounts[0] })
         .on('receipt', async (receipt: any) => {
           const data = receipt.events.Transfer.returnValues;
-          if ((data.src).toLowerCase() == (accounts[0]).toLowerCase() && (data.dst).toLowerCase() == (irrigateAddress).toLowerCase()) {
+          if ((data[0]).toLowerCase() == (accounts[0]).toLowerCase() && (data[1]).toLowerCase() == (irrigateAddress).toLowerCase()) {
             if (PROCESS_STATUS == 1) {
               PROCESS_STATUS = 2;
               setDonationStatus({code: 2, msg: ""});

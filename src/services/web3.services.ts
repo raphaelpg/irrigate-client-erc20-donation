@@ -2,8 +2,9 @@ import config from '../config/config';
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import { ITransaction } from '../interfaces/Transaction';
-import erc20Contract from '../contracts/Dai.json'
-import irrigateContract from '../contracts/Irrigate.json'
+// import erc20Contract from '../contracts/Dai.json';
+import erc20Contract from '../contracts/MintableERC20.json';
+import irrigateContract from '../contracts/Irrigate.json';
 import React from 'react';
 
 const irrigateAddress = config.web3.irrigateAddress;

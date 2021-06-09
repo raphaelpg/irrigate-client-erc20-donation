@@ -32,10 +32,11 @@ const SERVER = {
 
 const WEB3 = {
 	erc20Name: "dai",
-	erc20Address: "0xeeB8d8f4DeF89faBafADA49835Aaa1F564070249",
-	irrigateAddress: "0xaE60043a765E672a3209b0871Ed9ab2FD0549A34",
+	erc20Address: "0x001B3B4d0F3714Ca98ba10F6042DaEbF0B1B7b6F", // Mumbai DAI ERC20 address
+	irrigateAddress: "0xe5aab3581E702989d8D5de13fFe98E64417C56a0", // Mumbai Irrigate deployed address
 	// networkId: 137 //Matic
-	networkId: 5777, //Ganache 7545
+	// networkId: 5777, //Ganache 7545
+	networkId: 80001, //Mumbai
 };
 
 const CATEGORIES = [

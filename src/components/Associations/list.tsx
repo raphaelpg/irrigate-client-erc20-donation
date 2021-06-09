@@ -55,7 +55,7 @@ const List: React.FC<IListProps> = (props) => {
 	}, []);
 
 	// if (associations != undefined) {
-	if (associations.length != 0) {
+	if (associations != undefined && associations.length != 0) {
 		return (
 			<div className="causes-list-container">
 				{associations

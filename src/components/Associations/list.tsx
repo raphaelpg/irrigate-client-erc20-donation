@@ -59,6 +59,9 @@ const List: React.FC<IListProps> = (props) => {
 		return (
 			<div className="causes-list-container">
 				{associations
+					.sort((a: IAssociation, b: IAssociation) => {
+						return parseInt(b.creationDate!) - parseInt(a.creationDate!) 
+					})
 					.filter((association: any) => {
 						if (props.selectedCategory === 'All' && props.selectedLocation !=='Anywhere') {
 							return association.continent === props.selectedLocation;
@@ -97,9 +100,9 @@ const List: React.FC<IListProps> = (props) => {
 										onClick={() => handleDonationButton(name!, address!)} 
 									>Make a donation in {(config.web3.erc20Name).toUpperCase()}</button>
 							</FadeIn>
-						);
-					}
-				)}
+						)
+					})
+				}
 				<DonationForm 
 					handleDonation={handleDonation}
 					displayForm={displayForm}

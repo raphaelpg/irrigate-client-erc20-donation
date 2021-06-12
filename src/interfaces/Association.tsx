@@ -1,6 +1,6 @@
 export interface IAssociation {
 	_id?: string,
-	date?: string,
+	creationDate?: string,
 	name: string, 
 	description: string,
 	link?: string,
